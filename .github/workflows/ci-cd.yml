@@ -40,12 +40,13 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t my-app:${{ github.sha }} .
-          docker tag my-app:${{ github.sha }} my-dockerhub-username/my-app:latest
+          docker build -t ${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }} .
+          docker tag ${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/my-app:latest
 
       - name: Push Docker image
         run: |
-          docker push my-dockerhub-username/my-app:latest
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKER_USERNAME }}/my-app:latest
 
   deploy:
     needs: build
@@ -61,4 +62,4 @@ jobs:
         uses: azure/webapps-deploy@v2
         with:
           app-name: "my-azure-webapp"
-          images: "my-dockerhub-username/my-app:latest"
+          images: ${{ secrets.DOCKER_USERNAME }}/my-app:latest
